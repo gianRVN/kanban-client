@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ============ LINK BOOTSTRAP ============= -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    
+    <!-- ===== LINK CSS ===== -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- ===== LINK ICON ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+
+
+    <title>Kanvan Project</title>
+</head>
+<body>
+
+    <div id="app">
+        <!-- ===== NAVBAR ===== -->
+        <div class="container">
+            <nav class="navbar navbar-expand-lg fixed-top navbar-light">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="#" style="font-style: italic; font-weight: bold;">Kanvan</a>
+                </div>
+                <div v-if="page === 'main'">
+                    <button id="logout-button"  class="btn btn-outline-dark mr-5" v-on:click="logout">Logout</button>
+                </div>
+            </nav>
+        </div>
+        <!-- ===== END OF NAVBAR ===== -->
+
+    
+   
+        <!-- ===== FORM LOGIN ===== -->
+        <div id="login" class="container d-flex justify-content-center col-5 mt-3" v-if="page === 'login'">
+            <div class="container card d-flex justify-content-center mt-5 bg-light">
+
+                <form method="POST" v-on:submit.prevent="userLogin">
+                    <h3 style="text-align: center;" class="m-3 border-bottom border-info">Welcome to Kanvan!</h3>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label" >Email address</label>
+                        <input type="email" class="form-control" id="email-login" v-model="form_login.email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password-login" v-model="form_login.password">
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary" id="login-button">Submit</button>
+                        <a href="/" id="go-register" v-on:click.prevent="changePage('register')">Not Registered Yet?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ===== END OF FORM LOGIN ===== -->
+
+
+        <!-- ===== FORM REGISTER ===== -->
+        <div id="register" class="container d-flex justify-content-center col-5 mt-3" v-else-if="page === 'register'">
+            <div class="container card d-flex justify-content-center mt-5 bg-light">
+
+                <form method="POST" v-on:submit.prevent="userRegister">
+                    <h3 style="text-align: center;" class="m-3 border-bottom border-info"><p>Join with kanvan,</p> <p> Register Now</p></h3>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username-register" v-model="form_register.username" aria-describedby="usernameHelp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email-register" v-model="form_register.email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password-register" v-model="form_register.password">
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary" id="register-button">Submit</button>
+                        <a href="/" id="go-register" v-on:click.prevent="changePage('login')">Login?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ===== END OF FORM REGISTER ====== -->
+
+        <!-- ===== KANBAN CONTAINER ===== -->
+        <div id="main" v-else-if="page === 'main'" class="container-fluid mt-5 d-flex justify-content-center" style="text-align: center;">
+            <div class="container-fluid row mt-3 d-flex justify-content-center mb-3">
+
+                <!-- ===== BACK LOG ===== -->
+                <div class="col ">
+                    <div class="card border-primary box" style="max-width: 18rem;">
+                        <div class="card-header tag">Back-Log</div>
+                            <div class="card-body text-primary overflow-auto">
+
+                                <!-- ===== INPUT ===== -->
+                                <div class="card border-primary mb-3" v-if="addData === 'false' && updateData === 'false'" v-for="item in tasks" :key="item.id" style="max-width: 15rem;">
+                                    <div class="card-header bg-transparent border-primary">{{ item.title }}</div>
+                                        <div class="card-body">
+                                            <small class="text-muted border-bottom border-primary">Assign To: {{ item.assign_to }} </small>
+                                            <p class="card-text">{{ item.description }}</p>
+                                            
+                                        </div>
+                                        <div class="card-footer bg-transparent border-primary">
+                                            <div class="btn-group" role="group" v-show="deleteId !== item.id">
+                                                <button type="button" class="btn btn-secondary" v-on:click.prevent="isUpdate('true', item.id)" data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fas fa-pen"></i></button>
+                                                <button type="button" class="btn btn-danger" data-toggle="tooltip" v-on:click="isDelete(item.id)" data-placement="bottom" title="Delete"><i class="fas fa-eraser"></i></button>
+                                            </div>
+                                            <div class="row" id="item.id" v-show="deleteId === item.id">
+                                                <label for="">Are You Sure?</label>
+                                                <button type="button" class="btn btn-danger" v-on:click="removeData(item.id)">Yes</button>
+                                                <button type="button" class="btn btn-warning" v-on:click="isDelete('false')">No</button>
+                                            </div>
+                                        </div>
+                                </div>
+                                <!-- ===== END OF INPUT ===== -->
+                                <!-- ===== ADD FORM ===== -->
+                                <div v-if="addData === 'true'">
+                                    <div class="card border-danger mb-1" style="max-width: 15rem;">
+                                        <form v-on:submit.prevent="addBackLog">
+                                            <div class="card-header">
+                                                <label for="title">Title</label>
+                                                <input type="text"class="form-control" v-model="form_add.title" id="title">
+                                            </div>
+                                            <div class="card-body">
+                                                <label for="assign_to">Assign To</label>
+                                                <input type="text" id="assign_to" v-model="form_add.assign_to">
+                                                <label for="description">Description</label>
+                                                <textarea class="form-control" id="description" v-model="form_add.description" cols="20" rows="8"></textarea>
+                                            </div>
+                                            <div class="card-footer" id="pop-add">
+                                                <button class="btn btn-secondary">Add</button>
+                                                <button class="btn btn-warning" v-on:click="isAdd('false')">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- ===== END OF ADD-FORM ===== -->
+
+                                <!-- ===== UPDATE FORM ===== -->
+                                <div v-if="updateData === 'true'">
+                                    <div class="card border-danger mb-1" style="max-width: 15rem;">
+                                        <form v-on:submit.prevent="updateBackLog()">
+                                            <div class="card-header">
+                                                <label for="title">Title</label>
+                                                <input type="text"class="form-control" v-model="form_update.title" id="title">
+                                            </div>
+                                            <div class="card-body">
+                                                <label for="assign_to">Assign To</label>
+                                                <input type="text" id="assign_to" v-model="form_update.assign_to">
+                                                <label for="description">Description</label>
+                                                <textarea class="form-control" id="description" v-model="form_update.description" cols="20" rows="8"></textarea>
+                                            </div>
+                                            <div class="card-footer" id="pop-update">
+                                                <button class="btn btn-secondary">Update</button>
+                                                <button class="btn btn-warning" v-on:click="isUpdate('false')">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- ===== END OF UPDATE-FORM ===== -->
+                            </div>
+
+                            <div class="card-footer" id="add-button" style="min-height: 56px;">
+                                <button type="button" class="btn btnAdd" v-show="addData === 'false' " v-on:click="isAdd('true')"><i class="fas fa-plus"></i>  Add New Task</button>
+                            </div>
+                    </div>
+                </div>
+                <!-- ===== END OF BACK LOG ===== -->
+
+
+                <!-- ===== TODO ===== -->
+                <div class="col ">
+                    <div class="card border-warning box" style="max-width: 18rem;">
+                        <div class="card-header tag">Todo</div>
+                            <div class="card-body text-warning overflow-auto">
+
+                                <!-- ===== INPUT ===== -->
+                                <div class="card border-warning mb-3" style="max-width: 15rem;">
+                                    <div class="card-header bg-transparent border-warning">Nama Task</div>
+                                        <div class="card-body">
+                                            <small class="text-muted border-bottom border-primary">Assign To: </small>
+                                            <p class="card-text">Description</p>
+                                            
+                                        </div>
+                                        <div class="card-footer bg-transparent border-warning">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fas fa-pen"></i></button>
+                                                <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-eraser"></i></button>
+                                                
+                                            </div>
+                                        </div>
+                                </div>
+                                <!-- ===== END OF INPUT ===== -->
+                            </div>
+
+                            <div class="card-footer">
+                                <button type="button" class="btn btnAdd"><i class="fas fa-plus"></i>  Add New Task</button>
+                            </div>
+                    </div>
+                </div>
+                <!-- ===== END OF TODO ===== -->
+                
+                
+                <!-- ===== DOING ===== -->
+                <div class="col ">
+                    <div class="card border-info box" style="max-width: 18rem;">
+                        <div class="card-header tag">Doing</div>
+                            <div class="card-body text-info overflow-auto">
+                        
+                                <!-- ===== INPUT ===== -->
+                                <div class="card border-info mb-3" style="max-width: 15rem;">
+                                    <div class="card-header bg-transparent border-info">Nama Task</div>
+                                        <div class="card-body">
+                                            <small class="text-muted border-bottom border-primary">Assign To: </small>
+                                            <p class="card-text">Description</p>
+                                            
+                                        </div>
+                                        <div class="card-footer bg-transparent border-info">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fas fa-pen"></i></button>
+                                                <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-eraser"></i></button>
+                                                
+                                            </div>
+                                        </div>
+                                </div>
+                                <!-- ===== END OF INPUT ===== -->
+                            </div>
+
+                            <div class="card-footer">
+                                <button type="button" class="btn btnAdd"><i class="fas fa-plus"></i>  Add New Task</button>
+                            </div>
+                    </div>
+                </div>
+                <!-- ===== END OF DOING ===== -->
+
+
+                <!-- ===== DONE ===== -->
+                <div class="col ">
+                    <div class="card border-success box" style="max-width: 18rem;">
+                        <div class="card-header tag">Done</div>
+                            <div class="card-body text-success overflow-auto">
+                                <!-- ===== INPUT ===== -->
+                                <div class="card border-success mb-3" style="max-width: 15rem;">
+                                    <div class="card-header bg-transparent border-success">Nama Task</div>
+                                        <div class="card-body">
+                                            <small class="text-muted border-bottom border-primary">Assign To: </small>
+                                            <p class="card-text">Description</p>
+                                            
+                                        </div>
+                                        <div class="card-footer bg-transparent border-success">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fas fa-pen"></i></button>
+                                                <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-eraser"></i></button>
+                                                
+                                            </div>
+                                        </div>
+                                </div>
+                                <!-- ===== END OF INPUT ===== -->
+                            </div>
+
+                            <div class="card-footer">
+                                <button type="button" class="btn btnAdd"><i class="fas fa-plus"></i>  Add New Task</button>
+                            </div>
+                    </div>
+                </div>
+                <!-- ===== END OF DONE ===== -->
+
+
+            </div>
+        </div>
+        <!-- ===== END OF KANBAN CONTAINER -->
+    </div>
+
+    <!-- ===== SCRIPT VUE.JS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <!-- ===== SCRIPT AXIOS ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
+    <!-- ===== SCRIPT FILE MAIN.JS ===== -->
+    <script src="main.js"></script>
+    
+</body>
+</html>

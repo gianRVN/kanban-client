@@ -1,0 +1,39 @@
+{
+  "tasks": [
+    {
+      "title": "create server",
+      "assign_to": "Agung",
+      "description": "Server Kanban Project",
+      "category": "Back-Log",
+      "id": 1
+    },
+    {
+      "title": "create client + bantu2 handle CSS",
+      "assign_to": "Udin",
+      "description": "Client Kanban Project",
+      "category": "Back-Log",
+      "id": 2
+    },
+    {
+      "id": 3,
+      "title": "Atur CSS + 3rd API",
+      "assign_to": "Gaspar",
+      "description": "Server Kanban Project",
+      "category": "Back-Log"
+    },
+    {
+      "title": "buat auth + middleware",
+      "assign_to": "Udin",
+      "description": "kanvan project",
+      "category": "Back-Log",
+      "id": 4
+    },
+    {
+      "title": "belanja bulanan",
+      "assign_to": "Agung",
+      "category": "Back-Log",
+      "description": "barang kebutuhan sehari-hari",
+      "id": 5
+    }
+  ]
+}
