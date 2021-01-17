@@ -74,16 +74,8 @@
                 </form>
                 <h5>Category List</h5>
                 <div v-for="(item, idx) in categoryList" :key="idx">
-                  <div
-                    class="d-flex justify-content-between"
-                    v-if="
-                      item !== 'Backlog' &&
-                      item !== 'Todo' &&
-                      item !== 'Doing' &&
-                      item !== 'Done'
-                    "
-                  >
-                    {{ item }}
+                  <div class="d-flex justify-content-between">
+                    {{ item.name }}
                     <button
                       style="
                         background-color: white;
@@ -91,13 +83,10 @@
                         padding: 1px 4px;
                       "
                       data-bs-dismiss="modal"
-                      @click="deleteCategoryList(item)"
+                      @click="deleteCategoryList(item.name)"
                     >
                       <i class="fas fa-trash-alt"></i>
                     </button>
-                  </div>
-                  <div class="d-flex justify-content-between" v-else>
-                    {{ item }}
                   </div>
                 </div>
               </div>
@@ -126,7 +115,7 @@
           role="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
-          v-text="profilName"
+          v-text="user"
         ></a>
         <ul
           class="dropdown-menu"
@@ -140,9 +129,7 @@
               padding: 0.1rem 0;
             "
           >
-            <a class="dropdown-item" role="button" @click="signOut()"
-              >Sign Out</a
-            >
+            <a class="dropdown-item" role="button" @click="signOut">Sign Out</a>
           </li>
         </ul>
       </li>
@@ -157,28 +144,19 @@ export default {
     return {
       category: false,
       newCategory: "",
-      newMember: "",
+      user: localStorage.getItem("user"),
     };
   },
   props: ["profilName", "categoryList", "memberList"],
   methods: {
-    signOut() {
-      this.$gAuth.signOut();
-      this.$emit("signOut");
-    },
-    checkAuth() {
-      this.$emit("checkAuth");
-    },
     deleteCategoryList(text) {
-      this.checkAuth();
       this.$emit("deleteCategoryList", text);
     },
     addCategory(text) {
       this.$emit("addCategory", text);
     },
-    addMember(text) {
-      this.$emit("addMember", text);
-      newMember = "";
+    signOut() {
+      this.$emit("signOut");
     },
   },
 };

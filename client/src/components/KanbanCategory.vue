@@ -43,10 +43,8 @@
         >
           <kanban-create-form
             :cardCategory="cardCategory"
-            @hideCreateForm="hideCreateForm"
             @getData="getData"
-            @checkAuth="checkAuth"
-            @createData="createData"
+            @hideCreateForm="hideCreateForm"
           ></kanban-create-form>
         </div>
 
@@ -55,8 +53,7 @@
           :key="task.id"
           :task="task"
           :cardCategory="cardCategory"
-          @deleteData="deleteData"
-          @updateData="updateData"
+          @getData="getData"
           @checkAuth="checkAuth"
         ></task-list>
       </div>
@@ -76,17 +73,22 @@ export default {
           background-color: grey;
           color: white;
         "`,
+      taskList: [],
+      formTask: "",
+      task: {
+        title: "",
+        description: "",
+        status: "",
+        dueDate: "",
+      },
     };
   },
   components: {
     KanbanCreateForm,
     TaskList,
   },
-  props: ["cardCategory", "formTask", "taskList"],
+  props: ["cardCategory"],
   methods: {
-    showCreateForm(value) {
-      this.$emit("showCreateForm", value);
-    },
     checkAuth() {
       this.$emit("checkAuth");
     },
@@ -113,24 +115,35 @@ export default {
         "`;
       }
     },
-    hideCreateForm() {
-      this.$emit("hideCreateForm");
-    },
     getData() {
-      this.$emit("getData");
+      axios({
+        method: "GET",
+        url: "http://localhost:3000",
+        headers: { access_token: localStorage.getItem("access_token") },
+      })
+        .then((task) => {
+          this.taskList = task.data;
+        })
+        .catch((err) => {});
     },
-    createData(value) {
-      this.$emit("createData", value);
+    showCreateForm(text) {
+      this.formTask = text;
+      this.task.status = text;
+      this.task.title = "";
+      this.task.description = "";
+      this.task.dueDate = "";
     },
-    deleteData(value) {
-      this.$emit("deleteData", value);
-    },
-    updateData(value) {
-      this.$emit("updateData", value);
+    hideCreateForm() {
+      this.formTask = "";
+      this.task.status = "";
+      this.task.title = "";
+      this.task.description = "";
+      this.task.dueDate = "";
     },
   },
   created: function () {
     this.changeStyle();
+    this.getData();
   },
 };
 </script>

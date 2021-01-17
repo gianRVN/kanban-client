@@ -28,24 +28,31 @@
         "
       />
       <div id="my-button-yes">
-        <button class="btn btn-warning" id="open-signin" @click="signin()">
+        <button
+          class="btn btn-warning"
+          id="open-signin"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+          @click.prevent="signin()"
+        >
           Sign In
         </button>
       </div>
       <h5 style="margin-bottom: 20px; text-align: center">
         Or Sign In with Social Platforms
       </h5>
-      <google
-        style="margin-bottom: 50px"
+      <button
+        id="google-signin-button"
+        style="margin-bottom: 50px; margin-left: auto; margin-right: auto"
         class="d-flex justify-content-center"
-        @click.prevent="signin"
-      ></google>
+        @click.prevent="onSignIn()"
+      ></button>
       <div class="row-5" style="text-align: center">
         <a
           class="btn btn-success"
           role="button"
           id="create-account"
-          @click="changePage('sign-up-page')"
+          @click.prevent="changePage('sign-up-page')"
           >Create Account</a
         >
       </div>
@@ -54,20 +61,16 @@
 </template>
 
 <script>
-import Google from "./Google";
-
 export default {
   name: "SignInForm",
   data() {
     return {
       user: {
+        name: "",
         email: "",
         password: "",
       },
     };
-  },
-  components: {
-    Google,
   },
   methods: {
     signin() {
@@ -81,10 +84,14 @@ export default {
       })
         .then((task) => {
           localStorage.setItem("access_token", task.data.access_token);
+          localStorage.setItem("user", `Hi, ${task.data.name}`);
+          this.user.name = task.data.name;
+          this.changeErrorMessage("");
           this.checkAuth();
         })
         .catch((err) => {
-          console.log(err, "ini error");
+          this.changeErrorMessage(err.response.data);
+          this.checkAuth();
         });
     },
     changePage(value) {
@@ -93,9 +100,38 @@ export default {
     checkAuth() {
       this.$emit("checkAuth");
     },
+    changeErrorMessage(name) {
+      this.$emit("changeErrorMessage", name);
+    },
     changeMainPage(value) {
       this.$emit("changeMainPage", value);
     },
+    onSignIn(user) {
+      var id_token = user.getAuthResponse().id_token;
+
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/google`,
+        data: {
+          name: user.getBasicProfile().Ed,
+          email: user.getBasicProfile().tu,
+          password: id_token,
+        },
+      })
+        .then((task) => {
+          this.checkAuth();
+          this.changeMainPage("home-page");
+          localStorage.setItem("user", `Hi, ${user.getBasicProfile().Ed}`);
+          localStorage.setItem("access_token", task.data.access_token);
+          this.checkAuth();
+        })
+        .catch((err) => {});
+    },
+  },
+  mounted() {
+    gapi.signin2.render("google-signin-button", {
+      onsuccess: this.onSignIn,
+    });
   },
 };
 </script>

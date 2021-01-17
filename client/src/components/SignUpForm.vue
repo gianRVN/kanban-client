@@ -42,10 +42,9 @@
       />
       <div id="my-button-signup">
         <button
-          type="submit"
           class="btn btn-primary"
           id="open-signin"
-          @click="signup"
+          @click.prevent="signup()"
         >
           Sign Up
         </button>
@@ -79,7 +78,6 @@ export default {
   },
   methods: {
     signup() {
-      console.log("masuk signup method");
       axios({
         method: "POST",
         url: `http://localhost:3000/signup`,
@@ -90,12 +88,19 @@ export default {
         },
       })
         .then((task) => {
-          console.log("berhasil signup");
           localStorage.setItem("access_token", task.data.access_token);
+          localStorage.setItem("user", `Hi, ${task.data.name}`);
+          this.user.myName = task.data.name;
+          this.changeErrorMessage("");
           this.checkAuth();
         })
         .catch((err) => {
-          console.log(err, "ini err");
+          let temp = [];
+          err.response.data.errorMessage.forEach((el) => {
+            temp.push(el.message);
+          });
+          this.changeErrorMessage(temp);
+          this.checkAuth();
         });
     },
     changePage(value) {
@@ -103,6 +108,12 @@ export default {
     },
     checkAuth() {
       this.$emit("checkAuth");
+    },
+    changeErrorMessage(name) {
+      this.$emit("changeErrorMessage", name);
+    },
+    changeMainPage(value) {
+      this.$emit("changeMainPage", value);
     },
   },
 };

@@ -43,11 +43,12 @@
           </button>
           <kanban-update-form
             :task="task.Task"
-            @updateData="updateData"
-            @checkAuth="checkAuth"
+            @getData="$emit('getData')"
             @hideUpdateForm="hideUpdateForm"
             v-if="updateForm === true"
           ></kanban-update-form>
+          <error-message-delete v-if="errorMessage === 'delete'">
+          </error-message-delete>
         </div>
       </div>
     </div>
@@ -56,33 +57,45 @@
 
 <script>
 import KanbanUpdateForm from "./KanbanUpdateForm.vue";
+import ErrorMessageDelete from "./ErrorMessageDelete";
 
 export default {
   name: "TaskList",
   data() {
     return {
       updateForm: false,
+      errorMessage: "",
     };
   },
   components: {
     KanbanUpdateForm,
+    ErrorMessageDelete,
   },
   props: ["task", "cardCategory", "id", "draggable"],
   methods: {
-    checkAuth() {
-      this.$emit("checkAuth");
-    },
-    updateData(value) {
-      this.$emit("updateData", value);
-    },
-    deleteData(value) {
-      this.$emit("deleteData", value);
+    deleteData(num) {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/${num}`,
+        data: {},
+        headers: { access_token: localStorage.getItem("access_token") },
+      })
+        .then((task) => {
+          this.getData();
+        })
+        .catch((err) => {
+          this.errorMessage = "delete";
+          this.getData();
+        });
     },
     showUpdateForm(value) {
       this.updateForm = true;
     },
     hideUpdateForm() {
       this.updateForm = false;
+    },
+    getData() {
+      this.$emit("getData");
     },
   },
 };

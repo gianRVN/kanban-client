@@ -1,5 +1,35 @@
 <template>
   <div class="card-body" :style="style">
+    <div v-if="errorCreate !== ''">
+      <div v-for="(err, idx) in errorCreate" :key="idx">
+        <p
+          style="font-size: 11px; margin-bottom: 5px; background-color: red"
+          v-if="err.message === 'Validation isAfter on dueDate failed'"
+        >
+          Date should be tomorrow or more
+        </p>
+        <p
+          style="font-size: 11px; margin-bottom: 5px; background-color: red"
+          v-else-if="err.message === 'Validation notEmpty on title failed'"
+        >
+          Title field is required
+        </p>
+        <p
+          style="font-size: 11px; margin-bottom: 5px; background-color: red"
+          v-else-if="
+            err.message === 'Validation notEmpty on description failed'
+          "
+        >
+          Description field is required
+        </p>
+        <p
+          style="font-size: 11px; margin-bottom: 5px; background-color: red"
+          v-else-if="err.message === 'Validation notEmpty on dueDate failed'"
+        >
+          Date field is required
+        </p>
+      </div>
+    </div>
     <form @submit.prevent="createData">
       <div class="form-floating mb-1">
         <input
@@ -38,7 +68,7 @@
         type="submit"
         class="btn btn-warning btn-sm"
         style="margin-top: 10px"
-        @click="createData(task)"
+        @click.prevent="createData(task)"
       >
         Add Task
       </button>
@@ -46,7 +76,7 @@
         role="button"
         class="btn btn-danger btn-sm"
         style="margin-top: 10px"
-        @click="hideCreateForm"
+        @click="$emit('hideCreateForm')"
         >Cancel</a
       >
     </form>
@@ -61,6 +91,7 @@ export default {
       style: `";
           background-color: grey;
         "`,
+      errorCreate: "",
       task: {
         title: "",
         dueDate: "",
@@ -73,9 +104,6 @@ export default {
   methods: {
     hideCreateForm() {
       this.$emit("hideCreateForm");
-    },
-    checkAuth() {
-      this.$emit("checkAuth");
     },
     changeStyle() {
       if (this.cardCategory === "Backlog") {
@@ -97,12 +125,28 @@ export default {
       }
     },
     createData(value) {
-      this.$emit("createData", value);
+      axios({
+        method: "POST",
+        url: "http://localhost:3000",
+        data: {
+          value,
+        },
+        headers: { access_token: localStorage.getItem("access_token") },
+      })
+        .then((task) => {
+          this.getData();
+          this.hideCreateForm();
+        })
+        .catch((err) => {
+          this.errorCreate = err.response.data.errorMessage;
+        });
+    },
+    getData() {
+      this.$emit("getData");
     },
   },
   created: function () {
     this.changeStyle();
-    this.checkAuth();
   },
 };
 </script>

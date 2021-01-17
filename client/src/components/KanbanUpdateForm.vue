@@ -1,6 +1,36 @@
 <template>
   <div class="card-body" :style="style">
-    <form @submit.prevent="updateData(task.id)">
+    <div v-if="errorUpdate !== ''">
+      <div v-for="(err, idx) in errorUpdate" :key="idx">
+        <p
+          style="font-size: 11px; background-color: red; margin-bottom: 5px"
+          v-if="err.message === 'Validation isAfter on dueDate failed'"
+        >
+          Date should be tomorrow or more
+        </p>
+        <p
+          style="font-size: 11px; background-color: red; margin-bottom: 5px"
+          v-else-if="err.message === 'Validation notEmpty on title failed'"
+        >
+          Title field is required
+        </p>
+        <p
+          style="font-size: 11px; background-color: red; margin-bottom: 5px"
+          v-else-if="
+            err.message === 'Validation notEmpty on description failed'
+          "
+        >
+          Description field is required
+        </p>
+        <p
+          style="font-size: 11px; background-color: red; margin-bottom: 5px"
+          v-else-if="err.message === 'Validation notEmpty on dueDate failed'"
+        >
+          Date field is required
+        </p>
+      </div>
+    </div>
+    <form @submit.prevent="updateData()">
       <div class="form-floating mb-1">
         <input
           v-model="taskUpdated.title"
@@ -38,6 +68,7 @@
         type="submit"
         class="btn btn-warning btn-sm"
         style="margin-top: 10px"
+        @click="updateData(task.id)"
       >
         Edit Task
       </button>
@@ -60,6 +91,7 @@ export default {
       style: `";
           background-color: grey;
         "`,
+      errorUpdate: "",
       taskUpdated: {
         title: "",
         dueDate: "",
@@ -72,9 +104,6 @@ export default {
   methods: {
     hideUpdateForm() {
       this.$emit("hideUpdateForm");
-    },
-    checkAuth() {
-      this.$emit("checkAuth");
     },
     changeStyle() {
       if (this.task.status === "Backlog") {
@@ -95,19 +124,29 @@ export default {
         "`;
       }
     },
-    updateData(value) {
-      let obj = {
-        params: +value,
-        data: this.taskUpdated,
-      };
-      this.$emit("updateData", obj);
-      this.checkAuth();
-      this.hideUpdateForm();
+    updateData() {
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/${this.task.id}`,
+        data: {
+          data: this.taskUpdated,
+        },
+        headers: { access_token: localStorage.getItem("access_token") },
+      })
+        .then((task) => {
+          this.getData();
+          this.hideUpdateForm();
+        })
+        .catch((err) => {
+          this.errorUpdate = err.response.data.errorMessage;
+        });
+    },
+    getData() {
+      this.$emit("getData");
     },
   },
   created: function () {
     this.changeStyle();
-    this.checkAuth();
   },
 };
 </script>
