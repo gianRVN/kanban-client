@@ -54,7 +54,7 @@ export default {
     deleteCategoryList(text) {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/category/${text}`,
+        url: `https://server-kang-bang.herokuapp.com/category/${text}`,
         data: {},
         headers: { access_token: localStorage.getItem("access_token") },
       })
@@ -66,7 +66,7 @@ export default {
     getDataCategory() {
       axios({
         method: "GET",
-        url: `http://localhost:3000/category`,
+        url: `https://server-kang-bang.herokuapp.com/category`,
         headers: { access_token: localStorage.getItem("access_token") },
       })
         .then((categoryList) => {
@@ -78,7 +78,7 @@ export default {
       console.log("BERSIAP");
       axios({
         method: "POST",
-        url: `http://localhost:3000/category`,
+        url: `https://server-kang-bang.herokuapp.com/category`,
         data: {
           category: text,
         },

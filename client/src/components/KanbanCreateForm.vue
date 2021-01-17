@@ -127,7 +127,7 @@ export default {
     createData(value) {
       axios({
         method: "POST",
-        url: "http://localhost:3000",
+        url: "https://server-kang-bang.herokuapp.com/",
         data: {
           value,
         },

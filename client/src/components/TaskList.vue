@@ -76,7 +76,7 @@ export default {
     deleteData(num) {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/${num}`,
+        url: `https://server-kang-bang.herokuapp.com/${num}`,
         data: {},
         headers: { access_token: localStorage.getItem("access_token") },
       })

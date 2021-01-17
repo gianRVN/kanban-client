@@ -127,7 +127,7 @@ export default {
     updateData() {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/${this.task.id}`,
+        url: `https://server-kang-bang.herokuapp.com/${this.task.id}`,
         data: {
           data: this.taskUpdated,
         },

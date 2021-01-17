@@ -80,7 +80,7 @@ export default {
     signup() {
       axios({
         method: "POST",
-        url: `http://localhost:3000/signup`,
+        url: `https://server-kang-bang.herokuapp.com/signup`,
         data: {
           name: this.user.myName,
           email: this.user.email,
@@ -96,6 +96,7 @@ export default {
         })
         .catch((err) => {
           let temp = [];
+          console.log(err);
           err.response.data.errorMessage.forEach((el) => {
             temp.push(el.message);
           });

@@ -76,7 +76,7 @@ export default {
     signin() {
       axios({
         method: "POST",
-        url: `http://localhost:3000/signin`,
+        url: `https://server-kang-bang.herokuapp.com/signin`,
         data: {
           email: this.user.email,
           password: this.user.password,
@@ -111,7 +111,7 @@ export default {
 
       axios({
         method: "POST",
-        url: `http://localhost:3000/google`,
+        url: `https://server-kang-bang.herokuapp.com/google`,
         data: {
           name: user.getBasicProfile().Ed,
           email: user.getBasicProfile().tu,

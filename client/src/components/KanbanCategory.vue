@@ -118,7 +118,7 @@ export default {
     getData() {
       axios({
         method: "GET",
-        url: "http://localhost:3000",
+        url: "https://server-kang-bang.herokuapp.com/",
         headers: { access_token: localStorage.getItem("access_token") },
       })
         .then((task) => {
